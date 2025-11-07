@@ -8,11 +8,7 @@ export const Login = ({ setUsuarioLogueado }) => {
   const [error, setError] = useState("");
 
   // Usuarios de ejemplo
-  const usuarios = [
-    { username: "Cris Kennedy", password: "1234", rol: "usuario" },
-    { username: "Admin Master", password: "1234", rol: "admin" },
-  ];
-
+ 
   const handleSubmit = (e) => {
     e.preventDefault();
     const user = usuarios.find(

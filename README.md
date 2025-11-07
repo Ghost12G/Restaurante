@@ -36,9 +36,6 @@ npm install chart.js
 npm install lucide-react
 npm install react-calendar
 
-/* Login simulado para el parcial: usuarios de ejemplo */
-- Usuario: "Cris Kennedy" / Contraseña: "1234" (rol usuario)
-- Usuario: "Admin Master" / Contraseña: "1234" (rol admin)
 
 El proyecto fue subido a GitHub y desplegado en Vercel (hosting gratuito).
 Enlace al sitio en vivo: https://el-buen-paladar.vercel.app (reemplaza con tu enlace real).

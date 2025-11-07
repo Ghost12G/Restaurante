@@ -5,6 +5,7 @@ import { iniciarDashboard } from "./Dashboard.js";
 import { SidebarDashboard } from "./SidebarDashboard";
 import DashboardContent from "./DashboardContent";
 
+
 const Dashboard = () => {
   const [seccionActiva, setSeccionActiva] = useState("principal");
 

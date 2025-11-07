@@ -9,6 +9,7 @@ export const Reservas = () => {
   const [hora, setHora] = useState("");
   const [nombre, setNombre] = useState("");
   const [personas, setPersonas] = useState(1);
+  const [mesa, setMesa] = useState(""); // 🪑 nueva variable de estado
   const [reservas, setReservas] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState("");
@@ -25,18 +26,26 @@ export const Reservas = () => {
     "00:00",
   ];
 
+  // Mesas disponibles (10 mesas)
+  const mesasDisponibles = Array.from({ length: 10 }, (_, i) => `Mesa ${i + 1}`);
+
   // Función para agregar reserva
   const handleSubmit = (e) => {
     e.preventDefault();
     const fechaStr = fecha.toDateString();
 
-    // Verificar si ya hay una reserva en esa fecha y hora
+    if (!mesa) {
+      setError("⚠️ Debes seleccionar una mesa antes de confirmar.");
+      return;
+    }
+
+    // Verificar si ya hay una reserva en esa fecha, hora y mesa
     const conflicto = reservas.find(
-      (r) => r.fecha === fechaStr && r.hora === hora
+      (r) => r.fecha === fechaStr && r.hora === hora && r.mesa === mesa
     );
 
     if (conflicto) {
-      setError("⚠️ Ya existe una reserva para esa fecha y hora. Intenta con otro horario.");
+      setError("⚠️ Ya existe una reserva para esa fecha, hora y mesa. Intenta con otro horario o mesa.");
       return;
     }
 
@@ -47,6 +56,7 @@ export const Reservas = () => {
       fecha: fechaStr,
       hora,
       personas,
+      mesa,
     };
 
     setReservas([...reservas, nuevaReserva]);
@@ -59,15 +69,16 @@ export const Reservas = () => {
     setShowModal(false);
     setNombre("");
     setHora("");
+    setMesa("");
     setPersonas(1);
   };
 
-  // Efecto para simular actualización automática de reservas
+  // Efecto para ver cambios en consola
   useEffect(() => {
     console.log("Reservas actualizadas:", reservas);
   }, [reservas]);
 
-  // Función para marcar fechas con reservas en el calendario
+  // Marcar fechas con reservas
   const tileClassName = ({ date }) => {
     const tieneReserva = reservas.some(
       (r) => r.fecha === date.toDateString()
@@ -95,7 +106,7 @@ export const Reservas = () => {
           </div>
         </div>
 
-        {/* 🧾 Formulario de reserva */}
+        {/* 🧾 Formulario */}
         <div className="col-md-6">
           <div className="bg-light p-4 rounded shadow-sm">
             <h5 className="text-center mb-3">Registrar nueva reserva</h5>
@@ -114,6 +125,21 @@ export const Reservas = () => {
                   <option value="">Seleccionar hora</option>
                   {horasDisponibles.map((h, i) => (
                     <option key={i} value={h}>{h}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label fw-semibold">Mesa disponible</label>
+                <select
+                  className="form-select"
+                  value={mesa}
+                  onChange={(e) => setMesa(e.target.value)}
+                  required
+                >
+                  <option value="">Seleccionar mesa</option>
+                  {mesasDisponibles.map((m, i) => (
+                    <option key={i} value={m}>{m}</option>
                   ))}
                 </select>
               </div>
@@ -162,6 +188,7 @@ export const Reservas = () => {
                 <th>Cliente</th>
                 <th>Fecha</th>
                 <th>Hora</th>
+                <th>Mesa</th>
                 <th>Personas</th>
               </tr>
             </thead>
@@ -171,6 +198,7 @@ export const Reservas = () => {
                   <td>{r.nombre}</td>
                   <td>{r.fecha}</td>
                   <td>{r.hora}</td>
+                  <td>{r.mesa}</td>
                   <td>{r.personas}</td>
                 </tr>
               ))}
@@ -188,6 +216,7 @@ export const Reservas = () => {
           <p>Reserva para <strong>{nombre}</strong> confirmada.</p>
           <p><strong>Fecha:</strong> {fecha.toLocaleDateString()}</p>
           <p><strong>Hora:</strong> {hora}</p>
+          <p><strong>Mesa:</strong> {mesa}</p>
           <p><strong>Personas:</strong> {personas}</p>
           <hr />
           <p className="text-success fw-semibold text-center">

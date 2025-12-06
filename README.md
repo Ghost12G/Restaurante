@@ -129,9 +129,45 @@ Enlace al sitio en vivo: *[https://el-buen-paladar.vercel.app](https://el-buen-p
 
 ---
 
+## 📁 Instalación de la carpeta `vendor` (para el backend Laravel)
+
+Si tu proyecto incluye un backend en **Laravel**, también necesitarás instalar la carpeta `vendor` cuando clones el repositorio. Esta carpeta contiene todas las dependencias del backend.
+
+### 🔧 Instalación de `vendor`
+
+Dentro de la carpeta del backend (por ejemplo, `restaurante-api` o `backend`), ejecuta:
+
+```bash
+composer install
+```
+
+Esto descargará automáticamente todas las dependencias de Laravel dentro de la carpeta `vendor`.
+
+> ⚠️ Recuerda: **La carpeta `vendor` NO se sube a GitHub**. Siempre se vuelve a generar con `composer install`.
+
+---
+
 # Cómo guardarlo
 
 1. Dentro de la carpeta del proyecto (`restaurante`), crea un archivo llamado **`README.md`**.
 2. Ábrelo con **VSCode** o cualquier editor.
 3. Copia y pega este contenido.
 4. Guarda los cambios.
+
+## Instalación de `node_modules`
+
+Para reconstruir las dependencias del frontend, ejecuta el siguiente comando dentro de la carpeta del proyecto (donde está el `package.json`):
+
+```bash
+npm install
+```
+
+Esto descargará automáticamente la carpeta `node_modules` con todas las librerías necesarias para que el frontend funcione correctamente.
+
+Si necesitas ejecutar el proyecto, puedes usar:
+
+```bash
+npm run dev
+```
+
+(o el script correspondiente dependiendo de tu configuración).

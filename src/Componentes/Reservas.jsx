@@ -3,97 +3,115 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { Modal, Button, Alert } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Swal from "sweetalert2";
+import { useUsuario } from "./context/UsuarioContext";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export const Reservas = () => {
+  const { usuario } = useUsuario();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [fecha, setFecha] = useState(new Date());
   const [hora, setHora] = useState("");
-  const [nombre, setNombre] = useState("");
   const [personas, setPersonas] = useState(1);
-  const [mesa, setMesa] = useState(""); // 🪑 nueva variable de estado
+  const [mesa, setMesa] = useState("");
+  const [nombre, setNombre] = useState("");
   const [reservas, setReservas] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState("");
 
-  // Horarios disponibles
+  // Productos enviados desde carrito
+  const [productos, setProductos] = useState([]);
+
+  useEffect(() => {
+    if (usuario) setNombre(usuario.nombre || "");
+    if (location.state?.productos && Array.isArray(location.state.productos)) {
+      setProductos(location.state.productos);
+    }
+  }, [usuario, location.state]);
+
   const horasDisponibles = [
-    "17:00", "17:30",
-    "18:00", "18:30",
-    "19:00", "19:30",
-    "20:00", "20:30",
-    "21:00", "21:30",
-    "22:00", "22:30",
-    "23:00", "23:30",
-    "00:00",
+    "17:00","17:30","18:00","18:30",
+    "19:00","19:30","20:00","20:30",
+    "21:00","21:30","22:00","22:30",
+    "23:00","23:30","00:00"
   ];
 
-  // Mesas disponibles (10 mesas)
   const mesasDisponibles = Array.from({ length: 10 }, (_, i) => `Mesa ${i + 1}`);
 
-  // Función para agregar reserva
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const fechaStr = fecha.toDateString();
-
-    if (!mesa) {
-      setError("⚠️ Debes seleccionar una mesa antes de confirmar.");
-      return;
-    }
-
-    // Verificar si ya hay una reserva en esa fecha, hora y mesa
-    const conflicto = reservas.find(
-      (r) => r.fecha === fechaStr && r.hora === hora && r.mesa === mesa
-    );
-
-    if (conflicto) {
-      setError("⚠️ Ya existe una reserva para esa fecha, hora y mesa. Intenta con otro horario o mesa.");
-      return;
-    }
-
-    // Crear la nueva reserva
-    const nuevaReserva = {
-      id: reservas.length + 1,
-      nombre,
-      fecha: fechaStr,
-      hora,
-      personas,
-      mesa,
-    };
-
-    setReservas([...reservas, nuevaReserva]);
-    setShowModal(true);
-    setError("");
+  const tileClassName = ({ date }) => {
+    const tieneReserva = reservas.some(r => r.fecha === date.toDateString());
+    return tieneReserva ? "bg-primary text-white rounded-circle" : "";
   };
 
-  // Cerrar modal y limpiar
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!usuario) {
+      Swal.fire("Error", "Debes iniciar sesión para hacer una reserva", "error");
+      navigate("/login");
+      return;
+    }
+
+    if (!mesa || !hora) {
+      setError("⚠️ Debes seleccionar mesa y hora.");
+      return;
+    }
+
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:8081/restaurante/public/api/reserva", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id_usuario: usuario.id_usuario,
+          fecha: fecha.toISOString().split("T")[0],
+          hora,
+          mesa,
+          personas,
+          productos
+        })
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        const { reserva } = result; // Tomamos la reserva completa desde backend
+        setShowModal(true);
+        setReservas(prev => [
+          ...prev,
+          {
+            id: reserva.id_reserva,
+            nombre: nombre || reserva.nombre || "",
+            fecha: new Date(reserva.fecha).toLocaleDateString(),
+            hora: reserva.hora,
+            mesa: reserva.mesa,
+            personas: reserva.personas
+          }
+        ]);
+      } else {
+        Swal.fire("Error", result.message || "Error al registrar la reserva", "error");
+      }
+    } catch (err) {
+      Swal.fire("Error", "No se pudo conectar con el servidor", "error");
+      console.error(err);
+    }
+  };
+
   const handleClose = () => {
     setShowModal(false);
-    setNombre("");
     setHora("");
     setMesa("");
     setPersonas(1);
   };
 
-  // Efecto para ver cambios en consola
-  useEffect(() => {
-    console.log("Reservas actualizadas:", reservas);
-  }, [reservas]);
-
-  // Marcar fechas con reservas
-  const tileClassName = ({ date }) => {
-    const tieneReserva = reservas.some(
-      (r) => r.fecha === date.toDateString()
-    );
-    return tieneReserva ? "bg-primary text-white rounded-circle" : "";
-  };
-
   return (
     <div className="container my-5">
-      <h2 className="text-center mb-4 fw-bold text-primary">
-        📅 Gestión de Reservas
-      </h2>
+      <h2 className="text-center mb-4 fw-bold text-primary">📅 Gestión de Reservas</h2>
 
       <div className="row">
-        {/* 📆 Calendario */}
         <div className="col-md-6 mb-4">
           <div className="bg-light p-3 rounded shadow-sm">
             <label className="form-label fw-semibold">Selecciona una fecha</label>
@@ -106,7 +124,6 @@ export const Reservas = () => {
           </div>
         </div>
 
-        {/* 🧾 Formulario */}
         <div className="col-md-6">
           <div className="bg-light p-4 rounded shadow-sm">
             <h5 className="text-center mb-3">Registrar nueva reserva</h5>
@@ -168,7 +185,7 @@ export const Reservas = () => {
                 />
               </div>
 
-              <button type="submit" className="btn btn-primary w-100 fw-bold">
+              <button type="submit" className="btn btn-success w-100 fw-bold">
                 Confirmar Reserva
               </button>
             </form>
@@ -176,7 +193,6 @@ export const Reservas = () => {
         </div>
       </div>
 
-      {/* 📋 Lista de reservas */}
       <div className="mt-5 bg-white shadow-sm p-4 rounded">
         <h4 className="text-center mb-3">📋 Reservas Registradas</h4>
         {reservas.length === 0 ? (
@@ -207,10 +223,9 @@ export const Reservas = () => {
         )}
       </div>
 
-      {/* ✅ Modal */}
       <Modal show={showModal} onHide={handleClose} centered>
         <Modal.Header closeButton>
-          <Modal.Title>✅ Reserva Confirmada</Modal.Title>
+          <Modal.Title>✅ Reserva Exitosa</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p>Reserva para <strong>{nombre}</strong> confirmada.</p>
@@ -218,6 +233,19 @@ export const Reservas = () => {
           <p><strong>Hora:</strong> {hora}</p>
           <p><strong>Mesa:</strong> {mesa}</p>
           <p><strong>Personas:</strong> {personas}</p>
+
+          {productos.length > 0 && (
+            <>
+              <hr />
+              <h6>Productos en la reserva:</h6>
+              <ul>
+                {productos.map((p, i) => (
+                  <li key={i}>{p.nombre} x {p.cantidad}</li>
+                ))}
+              </ul>
+            </>
+          )}
+
           <hr />
           <p className="text-success fw-semibold text-center">
             ¡Nos vemos pronto en el restaurante! 🍽️

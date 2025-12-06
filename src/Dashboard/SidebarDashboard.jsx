@@ -1,13 +1,13 @@
 // src/Dashboard/SidebarDashboard.jsx
 import React from "react";
-import { House, CalendarDays, FileText, ShoppingBag, Users, ClipboardList } from "lucide-react";
+import { House, CalendarDays/* , FileText */, ShoppingBag, Users, ClipboardList } from "lucide-react";
 
 export const SidebarDashboard = ({ seccionActiva, setSeccionActiva }) => {
   const menuItems = [
     { id: "principal", label: "Dashboard", icon: <House size={18} /> },
     { id: "reservas", label: "Reservas", icon: <CalendarDays size={18} /> },
-    { id: "reportes", label: "Reportes", icon: <FileText size={18} /> },
-    { id: "ordenes", label: "Órdenes", icon: <ClipboardList size={18} /> },
+    /* { id: "reportes", label: "Reportes", icon: <FileText size={18} /> }, */
+    { id: "pedidos", label: "Pedidos", icon: <ClipboardList size={18} /> }, // <-- Cambiado
     { id: "productos", label: "Productos", icon: <ShoppingBag size={18} /> },
     { id: "clientes", label: "Clientes", icon: <Users size={18} /> },
   ];

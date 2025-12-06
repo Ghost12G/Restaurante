@@ -1,7 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import Swal from "sweetalert2";
+import { useUsuario } from "./context/UsuarioContext";
 import { Modal, Button } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export const Delivery = () => {
+  const { usuario } = useUsuario();
+  const location = useLocation();
+
   const [form, setForm] = useState({
     nombre: "",
     direccion: "",
@@ -16,67 +23,133 @@ export const Delivery = () => {
     yapeCodigo: "",
   });
 
+  const [carrito, setCarrito] = useState([]);
+
   const [showModal, setShowModal] = useState(false);
-  const [pedidoInfo, setPedidoInfo] = useState(null); // Guardar info del pedido para mostrar en el modal
+  const [deliveryData, setDeliveryData] = useState(null);
+
+  // ⭐ Nuevo estado para mostrar contenedor debajo
+  const [deliveryFinal, setDeliveryFinal] = useState(null);
+
+  useEffect(() => {
+    if (usuario) {
+      setForm((prev) => ({
+        ...prev,
+        nombre: usuario.nombre ?? "",
+        telefono: usuario.telefono ?? "",
+      }));
+    }
+
+    if (location.state?.productos && Array.isArray(location.state.productos)) {
+      setCarrito(location.state.productos);
+    }
+  }, [usuario, location.state]);
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Guardamos la información del pedido antes de limpiar
-    const fechaHora = new Date();
-    const info = {
-      ...form,
-      numeroPedido: Math.floor(Math.random() * 100000),
-      fechaHora: fechaHora.toLocaleString(), // formato local de fecha y hora
-    };
-    setPedidoInfo(info);
+    if (!form.pago) {
+      Swal.fire("Error", "Selecciona un método de pago", "error");
+      return;
+    }
 
-    setShowModal(true);
+    if (!usuario) {
+      Swal.fire("Error", "Debes estar logueado para registrar un delivery", "error");
+      return;
+    }
+
+    if (carrito.length === 0) {
+      Swal.fire("Error", "No hay productos en el carrito", "error");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        "http://localhost:8081/restaurante/public/api/delivery",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id_usuario: usuario.id_usuario,
+            direccion: form.direccion,
+            referencia: form.referencia,
+            telefono: form.telefono,
+            pago: form.pago,
+            tarjetaNumero: form.tarjetaNumero,
+            tarjetaNombre: form.tarjetaNombre,
+            tarjetaCVV: form.tarjetaCVV,
+            tarjetaFecha: form.tarjetaFecha,
+            yapeNumero: form.yapeNumero,
+            yapeCodigo: form.yapeCodigo,
+            productos: carrito,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        
+        const dataToShow = {
+          total: result.total,
+          ...form,
+          productos: carrito,
+        };
+
+        // Modal
+        setDeliveryData(dataToShow);
+        setShowModal(true);
+
+        // Contenedor abajo
+        setDeliveryFinal(dataToShow);
+
+        // Limpiar formulario
+        setForm({
+          nombre: usuario?.nombre ?? "",
+          direccion: "",
+          referencia: "",
+          telefono: usuario?.telefono ?? "",
+          pago: "",
+          tarjetaNumero: "",
+          tarjetaNombre: "",
+          tarjetaCVV: "",
+          tarjetaFecha: "",
+          yapeNumero: "",
+          yapeCodigo: "",
+        });
+
+        // Limpiar carrito
+        setCarrito([]);
+
+      } else {
+        Swal.fire("Error", result.message || "Error en el registro", "error");
+      }
+    } catch (err) {
+      Swal.fire("Error", "No se pudo conectar con el servidor", "error");
+      console.error(err);
+    }
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setForm({
-      nombre: "",
-      direccion: "",
-      referencia: "",
-      telefono: "",
-      pago: "",
-      tarjetaNumero: "",
-      tarjetaNombre: "",
-      tarjetaCVV: "",
-      tarjetaFecha: "",
-      yapeNumero: "",
-      yapeCodigo: "",
-    });
-    setPedidoInfo(null);
-  };
+  const handleClose = () => setShowModal(false);
 
   return (
-    <div className="container my-5" style={{ maxWidth: "650px" }}>
-      <h2 className="text-center mb-4 fw-bold text-primary">🛵 Delivery</h2>
+    <div className="container mt-4">
+      <h2 className="text-center mb-4 fw-bold text-primary">📦 Información de Delivery</h2>
 
-      <form
-        onSubmit={handleSubmit}
-        className="p-4 border rounded shadow-sm bg-light"
-      >
-        {/* Datos del cliente */}
+      {/* FORMULARIO */}
+      <form onSubmit={handleSubmit} className="card p-4 shadow-lg bg-light rounded-4">
         <div className="mb-3">
-          <label className="form-label">Nombre Completo</label>
+          <label className="form-label">Nombre</label>
           <input
             type="text"
             name="nombre"
+            className="form-control"
             value={form.nombre}
             onChange={handleChange}
-            className="form-control"
-            required
           />
         </div>
 
@@ -85,21 +158,21 @@ export const Delivery = () => {
           <input
             type="text"
             name="direccion"
+            className="form-control"
             value={form.direccion}
             onChange={handleChange}
-            className="form-control"
             required
           />
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Referencias</label>
+          <label className="form-label">Referencia</label>
           <input
             type="text"
             name="referencia"
+            className="form-control"
             value={form.referencia}
             onChange={handleChange}
-            className="form-control"
             required
           />
         </div>
@@ -107,175 +180,171 @@ export const Delivery = () => {
         <div className="mb-3">
           <label className="form-label">Teléfono</label>
           <input
-            type="tel"
+            type="text"
             name="telefono"
+            className="form-control"
             value={form.telefono}
             onChange={handleChange}
-            className="form-control"
             required
           />
         </div>
 
-        {/* Método de pago */}
-        <div className="mb-4">
+        <div className="mb-3">
           <label className="form-label">Método de Pago</label>
           <select
+            className="form-select"
             name="pago"
             value={form.pago}
             onChange={handleChange}
-            className="form-select"
             required
           >
-            <option value="">Seleccione un método</option>
+            <option value="">Seleccionar...</option>
             <option value="tarjeta">💳 Tarjeta</option>
             <option value="yape">📱 Yape</option>
             <option value="efectivo">💵 Efectivo</option>
           </select>
         </div>
 
-        {/* Si elige TARJETA */}
         {form.pago === "tarjeta" && (
-          <div className="border p-3 rounded bg-white mb-3">
-            <h5 className="fw-bold mb-3">Datos de la Tarjeta</h5>
-            <div className="mb-2">
-              <label className="form-label">Número de Tarjeta</label>
+          <>
+            <div className="mb-3">
+              <label>Número de tarjeta</label>
               <input
                 type="text"
                 name="tarjetaNumero"
+                className="form-control"
                 value={form.tarjetaNumero}
                 onChange={handleChange}
-                className="form-control"
-                placeholder="0000 0000 0000 0000"
-                maxLength="19"
-                required
               />
             </div>
-            <div className="mb-2">
-              <label className="form-label">Nombre del Titular</label>
+            <div className="mb-3">
+              <label>Nombre en tarjeta</label>
               <input
                 type="text"
                 name="tarjetaNombre"
+                className="form-control"
                 value={form.tarjetaNombre}
                 onChange={handleChange}
-                className="form-control"
-                placeholder="Nombre como aparece en la tarjeta"
-                required
               />
             </div>
-            <div className="row">
-              <div className="col-md-6 mb-2">
-                <label className="form-label">Fecha de Vencimiento</label>
-                <input
-                  type="month"
-                  name="tarjetaFecha"
-                  value={form.tarjetaFecha}
-                  onChange={handleChange}
-                  className="form-control"
-                  required
-                />
-              </div>
-              <div className="col-md-6 mb-2">
-                <label className="form-label">CVV</label>
-                <input
-                  type="password"
-                  name="tarjetaCVV"
-                  value={form.tarjetaCVV}
-                  onChange={handleChange}
-                  className="form-control"
-                  placeholder="3 dígitos"
-                  maxLength="3"
-                  required
-                />
-              </div>
+            <div className="mb-3">
+              <label>CVV</label>
+              <input
+                type="text"
+                name="tarjetaCVV"
+                className="form-control"
+                value={form.tarjetaCVV}
+                onChange={handleChange}
+              />
             </div>
-          </div>
+            <div className="mb-3">
+              <label>Fecha</label>
+              <input
+                type="text"
+                name="tarjetaFecha"
+                className="form-control"
+                value={form.tarjetaFecha}
+                onChange={handleChange}
+              />
+            </div>
+          </>
         )}
 
-        {/* Si elige YAPE */}
         {form.pago === "yape" && (
-          <div className="border p-3 rounded bg-white mb-3">
-            <h5 className="fw-bold mb-3">Pago con Yape</h5>
-            <div className="mb-2">
-              <label className="form-label">Número Yape</label>
+          <>
+            <div className="mb-3">
+              <label>Número Yape</label>
               <input
-                type="tel"
+                type="text"
                 name="yapeNumero"
+                className="form-control"
                 value={form.yapeNumero}
                 onChange={handleChange}
-                className="form-control"
-                placeholder="Ej: 999 888 777"
-                required
               />
             </div>
-            <div className="mb-2">
-              <label className="form-label">Código de verificación</label>
+            <div className="mb-3">
+              <label>Código Yape</label>
               <input
                 type="text"
                 name="yapeCodigo"
+                className="form-control"
                 value={form.yapeCodigo}
                 onChange={handleChange}
-                className="form-control"
-                placeholder="Código de 6 dígitos"
-                maxLength="6"
-                required
               />
             </div>
-          </div>
+          </>
         )}
 
-        {/* Si elige EFECTIVO */}
-        {form.pago === "efectivo" && (
-          <div className="border p-3 rounded bg-white mb-3">
-            <h5 className="fw-bold mb-3">Pago en Efectivo</h5>
-            <p className="mb-2">
-              💵 El pago se realizará al momento de la entrega.
-            </p>
-            <p className="text-muted fst-italic">
-              Por favor, tenga el monto exacto para agilizar la entrega.
-            </p>
-          </div>
-        )}
-
-        <button type="submit" className="btn btn-primary w-100">
-          Realizar Pedido
+        <button type="submit" className="btn btn-primary w-100 mt-3">
+          Registrar Delivery
         </button>
       </form>
 
-      {/* Modal de confirmación */}
-      {pedidoInfo && (
-        <Modal show={showModal} onHide={handleCloseModal} centered>
-          <Modal.Header closeButton>
-            <Modal.Title>✅ Transacción Exitosa</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>
-              Gracias por tu pedido, <strong>{pedidoInfo.nombre}</strong>!
-            </p>
-            <p>
-              Tu pedido será entregado en: <strong>{pedidoInfo.direccion}</strong>
-            </p>
-            <p>
-              <strong>Método de pago:</strong>{" "}
-              {pedidoInfo.pago === "tarjeta"
-                ? "💳 Tarjeta"
-                : pedidoInfo.pago === "yape"
-                ? "📱 Yape"
-                : "💵 Efectivo"}
-            </p>
-            <p>
-              Número de pedido: <strong>#{pedidoInfo.numeroPedido}</strong>
-            </p>
-            <p>
-              Fecha y hora del pedido: <strong>{pedidoInfo.fechaHora}</strong>
-            </p>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="success" onClick={handleCloseModal}>
-              Cerrar
-            </Button>
-          </Modal.Footer>
-        </Modal>
+      {/* ⭐ CONTENEDOR ABAJO */}
+      {deliveryFinal && (
+        <div className="mt-4 p-4 border rounded-4 shadow bg-white">
+          <h4 className="fw-bold text-success mb-3">📦 Delivery registrado</h4>
+
+          <p><strong>Cliente:</strong> {deliveryFinal.nombre}</p>
+          <p><strong>Dirección:</strong> {deliveryFinal.direccion}</p>
+          <p><strong>Referencia:</strong> {deliveryFinal.referencia}</p>
+          <p><strong>Teléfono:</strong> {deliveryFinal.telefono}</p>
+          <p><strong>Método de pago:</strong> {deliveryFinal.pago}</p>
+
+          <hr />
+
+          <h5 className="fw-bold">🛒 Productos</h5>
+          <ul>
+            {deliveryFinal.productos.map((p, i) => (
+              <li key={i}>{p.nombre} — x{p.cantidad}</li>
+            ))}
+          </ul>
+
+          <hr />
+
+          <h4 className="text-center text-primary fw-bold">
+            Total: S/ {parseFloat(deliveryFinal.total).toFixed(2)}
+          </h4>
+        </div>
       )}
+
+      {/* MODAL */}
+      <Modal show={showModal} onHide={handleClose} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>✅ Delivery Registrado</Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>
+          {deliveryData && (
+            <>
+              <p><strong>Cliente:</strong> {deliveryData.nombre}</p>
+              <p><strong>Dirección:</strong> {deliveryData.direccion}</p>
+              <p><strong>Referencia:</strong> {deliveryData.referencia}</p>
+              <p><strong>Teléfono:</strong> {deliveryData.telefono}</p>
+              <p><strong>Método de pago:</strong> {deliveryData.pago}</p>
+
+              <hr />
+              <h6>Productos:</h6>
+              <ul>
+                {deliveryData.productos.map((p, i) => (
+                  <li key={i}>{p.nombre} x {p.cantidad}</li>
+                ))}
+              </ul>
+
+              <hr />
+              <p className="text-success fw-bold text-center">
+                Total: S/ {parseFloat(deliveryData.total).toFixed(2)}
+              </p>
+            </>
+          )}
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button variant="success" onClick={handleClose}>
+            Cerrar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

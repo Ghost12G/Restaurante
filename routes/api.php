@@ -20,9 +20,17 @@ Route::get('/usuarios/{id_usuario}', [UsuarioController::class, 'show']);
 // -------------------- PRODUCTOS --------------------
 Route::get('/productos', [ProductoController::class, 'index']);
 Route::post('/productos', [ProductoController::class, 'store']);
-Route::get('/productos/{id}', [ProductoController::class, 'show']);
-Route::delete('/productos/{id}', [ProductoController::class, 'destroy']);
-Route::put('/productos/{id}', [ProductoController::class, 'update']); 
+//Route::get('/productos/{id}', [ProductoController::class, 'show']);
+//Route::delete('/productos/{id}', [ProductoController::class, 'destroy']);
+//Route::put('/productos/{id}', [ProductoController::class, 'update']); 
+
+
+Route::get('/productos/{id_producto}', [ProductoController::class, 'show']);
+Route::put('/productos/{id_producto}', [ProductoController::class, 'update']);
+Route::delete('/productos/{id_producto}', [ProductoController::class, 'destroy']);
+
+
+
 
 
 

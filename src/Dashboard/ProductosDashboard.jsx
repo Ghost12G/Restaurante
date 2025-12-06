@@ -2,20 +2,23 @@
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
+const API_BASE = "http://localhost:8081/restaurante/public/api/productos";
+
 const ProductosDashboard = () => {
   const [productos, setProductos] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [productoEditar, setProductoEditar] = useState(null);
   const [busqueda, setBusqueda] = useState("");
+  const [usarUrlImagen, setUsarUrlImagen] = useState(false);
 
   // ================= CARGAR PRODUCTOS =================
   const obtenerProductos = async () => {
     try {
-      const res = await fetch(
-        "http://localhost:8081/restaurante/public/api/productos"
-      );
+      const res = await fetch(API_BASE);
       const data = await res.json();
-      setProductos(data.data || []);
+      // tu controlador devuelve { success: true, data: [...] }
+      const lista = data.data || data || [];
+      setProductos(lista);
     } catch (error) {
       console.error("Error cargando productos:", error);
       Swal.fire("Error", "No se pudieron cargar los productos", "error");
@@ -27,10 +30,9 @@ const ProductosDashboard = () => {
   }, []);
 
   // ================= BUSCADOR =================
-  const productosFiltrados = productos.filter(
-    (p) =>
-      p.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-      p.categoria.toLowerCase().includes(busqueda.toLowerCase())
+  const productosFiltrados = productos.filter((p) =>
+    (p.nombre || "").toLowerCase().includes(busqueda.toLowerCase()) ||
+    (p.categoria || "").toLowerCase().includes(busqueda.toLowerCase())
   );
 
   // ================= ELIMINAR PRODUCTO =================
@@ -47,16 +49,14 @@ const ProductosDashboard = () => {
     if (!confirmar.isConfirmed) return;
 
     try {
-      const res = await fetch(
-        `http://localhost:8081/restaurante/public/api/productos/${id}`,
-        { method: "DELETE" }
-      );
+      const res = await fetch(`${API_BASE}/${id}`, { method: "DELETE" });
+      const body = await res.json().catch(() => ({}));
 
       if (res.ok) {
-        Swal.fire("Producto eliminado", "Se eliminó correctamente.", "success");
-        setProductos(productos.filter((p) => p.id_producto !== id));
+        Swal.fire("Producto eliminado", body.message || "Se eliminó correctamente.", "success");
+        setProductos((prev) => prev.filter((p) => p.id_producto !== id));
       } else {
-        Swal.fire("Error", "No se pudo eliminar el producto.", "error");
+        Swal.fire("Error", body.message || "No se pudo eliminar el producto.", "error");
       }
     } catch (error) {
       Swal.fire("Error", "Fallo la conexión con la API.", "error");
@@ -66,6 +66,7 @@ const ProductosDashboard = () => {
 
   // ================= ABRIR MODAL =================
   const abrirModal = (producto = null) => {
+    setUsarUrlImagen(false);
     if (producto) {
       setProductoEditar({ ...producto });
     } else {
@@ -83,30 +84,37 @@ const ProductosDashboard = () => {
 
   // ================= MANEJAR INPUTS =================
   const handleChange = (e) => {
-    setProductoEditar({ ...productoEditar, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setProductoEditar((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ================= MANEJAR IMAGEN =================
-  const handleImagen = (e) => {
-    const file = e.target.files[0];
+  // ================= MANEJAR IMAGEN (archivo) =================
+  const handleImagenFile = (e) => {
+    const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProductoEditar({ ...productoEditar, imagen: reader.result });
+        setProductoEditar((prev) => ({ ...prev, imagen: reader.result }));
       };
       reader.readAsDataURL(file);
     }
   };
 
+  // ================= MANEJAR URL IMAGEN =================
+  const handleImagenUrl = (e) => {
+    const url = e.target.value;
+    setProductoEditar((prev) => ({ ...prev, imagen: url }));
+  };
+
   // ================= GUARDAR PRODUCTO =================
   const guardarProducto = async () => {
-    if (!productoEditar.nombre || !productoEditar.precio || !productoEditar.categoria) {
+    if (!productoEditar?.nombre || !productoEditar?.precio || !productoEditar?.categoria) {
       Swal.fire("Error", "Completa los campos obligatorios", "warning");
       return;
     }
 
     try {
-      let url = "http://localhost:8081/restaurante/public/api/productos";
+      let url = API_BASE;
       let method = "POST";
 
       if (productoEditar.id_producto) {
@@ -120,7 +128,7 @@ const ProductosDashboard = () => {
         body: JSON.stringify(productoEditar),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
 
       if (res.ok) {
         Swal.fire("Éxito", data.message || "Producto guardado correctamente", "success");
@@ -179,7 +187,16 @@ const ProductosDashboard = () => {
                 <td>{p.stock}</td>
                 <td>{p.categoria}</td>
                 <td>
-                  {p.imagen && <img src={p.imagen} alt={p.nombre} style={{ width: "50px" }} />}
+                  {p.imagen && (
+                    <img
+                      src={p.imagen}
+                      alt={p.nombre}
+                      style={{ width: "50px", objectFit: "cover" }}
+                      onError={(e) => {
+                        e.target.src = ""; // evita icono roto
+                      }}
+                    />
+                  )}
                 </td>
                 <td>
                   <button className="btn btn-warning btn-sm me-2" onClick={() => abrirModal(p)}>
@@ -202,7 +219,7 @@ const ProductosDashboard = () => {
       </table>
 
       {/* MODAL AGREGAR/EDITAR */}
-      {modalVisible && (
+      {modalVisible && productoEditar && (
         <div className="modal show d-block" tabIndex="-1" style={{ background: "#00000080" }}>
           <div className="modal-dialog">
             <div className="modal-content">
@@ -263,15 +280,57 @@ const ProductosDashboard = () => {
                     onChange={handleChange}
                   />
                 </div>
+
+                {/* Imagen: elegir entre URL o archivo */}
                 <div className="mb-3">
                   <label className="form-label">Imagen</label>
-                  <input type="file" className="form-control" onChange={handleImagen} />
+                  <div className="mb-2">
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="imagenTipo"
+                        id="imgFile"
+                        checked={!usarUrlImagen}
+                        onChange={() => setUsarUrlImagen(false)}
+                      />
+                      <label className="form-check-label" htmlFor="imgFile">Archivo</label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="imagenTipo"
+                        id="imgUrl"
+                        checked={usarUrlImagen}
+                        onChange={() => setUsarUrlImagen(true)}
+                      />
+                      <label className="form-check-label" htmlFor="imgUrl">URL</label>
+                    </div>
+                  </div>
+
+                  {!usarUrlImagen ? (
+                    <input type="file" className="form-control" onChange={handleImagenFile} />
+                  ) : (
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="https://ejemplo.com/imagen.jpg"
+                      value={productoEditar.imagen || ""}
+                      onChange={handleImagenUrl}
+                    />
+                  )}
+
                   {productoEditar.imagen && (
                     <img
                       src={productoEditar.imagen}
                       alt="Preview"
                       className="mt-2"
-                      style={{ width: "80px" }}
+                      style={{ width: "120px", objectFit: "cover" }}
+                      onError={(e) => {
+                        // Si la URL falla, quitar la preview
+                        e.target.style.display = "none";
+                      }}
                     />
                   )}
                 </div>

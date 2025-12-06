@@ -7,114 +7,95 @@ use App\Models\Producto;
 
 class ProductoController extends Controller
 {
-    // LISTAR PRODUCTOS
+    // 🔹 LISTAR PRODUCTOS
     public function index()
     {
-        $productos = Producto::all();
-        return response()->json([
-            'success' => true,
-            'data' => $productos
-        ], 200);
+        return response()->json(Producto::all(), 200);
     }
 
-    // AGREGAR PRODUCTO
+    // 🔹 CREAR PRODUCTO
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|string|max:100',
+            'nombre' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
             'precio' => 'required|numeric',
-            'categoria' => 'required|string|max:50',
-            'stock' => 'nullable|integer',
-            'imagen' => 'nullable|string'
-
+            'categoria' => 'required|string|max:255',
+            'stock' => 'required|integer',
+            'imagen' => 'nullable|string',
         ]);
 
-        $productos = Producto::create([
-            'nombre' => $request->nombre,
-            'descripcion' => $request->descripcion,
-            'precio' => $request->precio,
-            'categoria' => $request->categoria,
-            'stock' => $request->stock ?? 0,
-            'imagen' => $request->imagen,
-            'fecha_registro' => now(),
-        ]);
+        $producto = Producto::create($request->all());
 
         return response()->json([
             'success' => true,
-            'message' => 'Producto registrado correctamente',
-            'data' => $productos
+            'message' => 'Producto creado correctamente',
+            'producto' => $producto
         ], 201);
     }
 
-    // MOSTRAR UN PRODUCTO
-    public function show($id)
+    // 🔹 OBTENER UN PRODUCTO POR ID
+    public function show($id_producto)
     {
-        $productos = Producto::find($id);
-        if (!$productos) {
+        $producto = Producto::find($id_producto);
+
+        if (!$producto) {
             return response()->json([
                 'success' => false,
                 'message' => 'Producto no encontrado'
             ], 404);
         }
+
+        return response()->json($producto, 200);
+    }
+
+    // 🔹 EDITAR PRODUCTO
+    public function update(Request $request, $id_producto)
+    {
+        $producto = Producto::find($id_producto);
+
+        if (!$producto) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Producto no encontrado'
+            ], 404);
+        }
+
+        $request->validate([
+            'nombre' => 'sometimes|string|max:255',
+            'descripcion' => 'nullable|string',
+            'precio' => 'sometimes|numeric',
+            'categoria' => 'sometimes|string|max:255',
+            'stock' => 'sometimes|integer',
+            'imagen' => 'nullable|string',
+        ]);
+
+        $producto->update($request->all());
+
         return response()->json([
             'success' => true,
-            'data' => $productos
+            'message' => 'Producto actualizado correctamente',
+            'producto' => $producto
         ], 200);
     }
-// ELIMINAR PRODUCTO
-public function destroy($id)
-{
-    $producto = Producto::find($id);
-    if (!$producto) {
+
+    // 🔹 ELIMINAR PRODUCTO
+    public function destroy($id_producto)
+    {
+        $producto = Producto::find($id_producto);
+
+        if (!$producto) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Producto no encontrado'
+            ], 404);
+        }
+
+        $producto->delete();
+
         return response()->json([
-            'success' => false,
-            'message' => 'Producto no encontrado'
-        ], 404);
+            'success' => true,
+            'message' => 'Producto eliminado correctamente'
+        ], 200);
     }
-    $producto->delete();
-    return response()->json([
-        'success' => true,
-        'message' => 'Producto eliminado correctamente'
-    ], 200);
-}
-
-// EDITAR PRODUCTO
-public function update(Request $request, $id)
-{
-    $producto = Producto::find($id);
-
-    if (!$producto) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Producto no encontrado'
-        ], 404);
-    }
-
-    // Validar campos editables
-    $request->validate([
-        'nombre' => 'required|string|max:100',
-        'descripcion' => 'nullable|string',
-        'precio' => 'required|numeric',
-        'categoria' => 'required|string|max:50',
-        'stock' => 'nullable|integer',
-        'imagen' => 'nullable|string|max:200'
-    ]);
-
-    $producto->update([
-        'nombre' => $request->nombre,
-        'descripcion' => $request->descripcion,
-        'precio' => $request->precio,
-        'categoria' => $request->categoria,
-        'stock' => $request->stock ?? $producto->stock,
-        'imagen' => $request->imagen ?? $producto->imagen
-    ]);
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Producto actualizado correctamente',
-        'data' => $producto
-    ], 200);
-}
-
 }

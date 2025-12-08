@@ -238,7 +238,7 @@ export const Delivery = () => {
               />
             </div>
             <div className="mb-3">
-              <label>Fecha</label>
+              <label>Fecha Fecimiento</label>
               <input
                 type="text"
                 name="tarjetaFecha"

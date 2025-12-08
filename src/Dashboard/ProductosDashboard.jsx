@@ -74,7 +74,7 @@ const ProductosDashboard = () => {
         nombre: "",
         descripcion: "",
         precio: "",
-        stock: 0,
+        /* stock: 0, */
         categoria: "",
         imagen: "",
       });
@@ -170,7 +170,7 @@ const ProductosDashboard = () => {
             <th>Nombre</th>
             <th>Descripción</th>
             <th>Precio</th>
-            <th>Stock</th>
+            {/* <th>Stock</th> */}
             <th>Categoría</th>
             <th>Imagen</th>
             <th>Acciones</th>
@@ -184,7 +184,7 @@ const ProductosDashboard = () => {
                 <td>{p.nombre}</td>
                 <td>{p.descripcion}</td>
                 <td>{p.precio}</td>
-                <td>{p.stock}</td>
+                {/* <td>{p.stock}</td> */}
                 <td>{p.categoria}</td>
                 <td>
                   {p.imagen && (

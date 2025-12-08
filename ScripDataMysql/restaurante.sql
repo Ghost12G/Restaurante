@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 05-12-2025 a las 06:40:38
+-- Tiempo de generación: 08-12-2025 a las 23:19:12
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -68,44 +68,23 @@ CREATE TABLE `delivery` (
 --
 
 INSERT INTO `delivery` (`id_delivery`, `id_usuario`, `direccion`, `referencia`, `telefono`, `pago`, `tarjetaNumero`, `tarjetaNombre`, `tarjetaCVV`, `tarjetaFecha`, `yapeNumero`, `yapeCodigo`, `numeroPedido`, `created_at`) VALUES
-(1, 4, 'Ramon Castilla Lt 01', 'dsdsdsdsds', '987253671', 'efectivo', NULL, NULL, NULL, NULL, NULL, NULL, 'PED-01466', '2025-12-01 21:05:48'),
-(2, 4, 'La Esperanza El provenir', 'dsdsdsdsds', '123233', 'yape', NULL, NULL, NULL, NULL, '928273645', '123456', 'PED-03180', '2025-12-01 21:14:08'),
-(3, 4, 'Ramon Castilla Lt 01', 'dsdsdsdsds', '987253671', 'efectivo', NULL, NULL, NULL, NULL, NULL, NULL, 'PED-11118', '2025-12-01 21:42:07'),
-(4, 4, 'Ramon Castilla Lt 01', 'dsdsdsdsds', '987253671', 'tarjeta', NULL, NULL, NULL, NULL, NULL, NULL, 'PED-12435', '2025-12-01 21:46:22'),
-(5, 4, 'Ramon Castilla Lt 01', 'dsdsdsdsds', '987253671', 'efectivo', NULL, NULL, NULL, NULL, NULL, NULL, 'PED-49858', '2025-12-01 22:02:42'),
-(6, 4, 'Ramon Castilla Lt 01', 'dsdsdsdsds', '987253671', 'efectivo', NULL, NULL, NULL, NULL, NULL, NULL, 'PED-19144', '2025-12-02 18:55:33'),
-(7, 4, 'sdsdsdsds', 'dsdsdsdsds', '987253671', 'efectivo', NULL, NULL, NULL, NULL, NULL, NULL, 'PED-96338', '2025-12-02 18:56:40'),
-(8, 6, 'Ramon Castilla Lt 01', 'dsdsdsdsds', '987253671', 'efectivo', NULL, NULL, NULL, NULL, NULL, NULL, 'PED-60958', '2025-12-02 21:02:13'),
-(9, 8, 'Ramon Castilla Lt 01', 'dsdsdsdsds', '987253671', 'efectivo', NULL, NULL, NULL, NULL, NULL, NULL, 'PED-76389', '2025-12-02 21:39:24'),
-(10, 8, 'Ramon Castilla Lt 01', 'dsdsdsdsds', '987253671', 'efectivo', NULL, NULL, NULL, NULL, NULL, NULL, 'PED-73928', '2025-12-03 00:57:52'),
-(11, 6, 'Ramon Castilla Lt 01', 'dsdsdsdsds', '987253671', 'efectivo', NULL, NULL, NULL, NULL, NULL, NULL, 'PED-87724', '2025-12-03 05:23:35'),
-(12, 8, 'Ramon Castilla Lt 01', 'dsd', '987253671', 'tarjeta', '9191919239393', '191929292929', '1234', '12:40', NULL, NULL, 'PED-77126', '2025-12-04 00:38:45'),
-(13, 8, 'Ramon Castilla Lt 01', 'dsdsdsdsds', '123233', 'efectivo', NULL, NULL, NULL, NULL, NULL, NULL, 'PED-95437', '2025-12-04 01:48:15'),
-(14, 8, 'Ramon Castilla Lt 01', 'dsdsdsdsds', '987253671', 'efectivo', NULL, NULL, NULL, NULL, NULL, NULL, 'PED-55629', '2025-12-04 14:59:59'),
-(15, 8, 'Ramon Castilla Lt 01', 'dsdsdsdsds', '8282828288', 'efectivo', NULL, NULL, NULL, NULL, NULL, NULL, 'PED-57490', '2025-12-04 17:25:28'),
-(16, 8, 'La Esperanza El provenir', 'dsdsdsdsds', '987253671', 'tarjeta', '11111-111-11-111-11', 'Cris', '123', '10/10', NULL, NULL, 'PED-42513', '2025-12-04 19:17:42'),
-(17, 10, 'Ramon Castilla Lt 01', 'espaldar del colegio juan 23', '987253671', 'yape', NULL, NULL, NULL, NULL, '976543567', '234567', 'PED-35789', '2025-12-04 23:21:35'),
-(18, 10, 'Ramon Castilla Lt 01', 'dsdsdsdsds', '987253671', 'efectivo', NULL, NULL, NULL, NULL, NULL, NULL, 'PED-35287', '2025-12-04 23:32:49'),
-(19, 10, 'Ramon Castilla Lt 01', 'dsdsdsdsds', '987253671', 'efectivo', NULL, NULL, NULL, NULL, NULL, NULL, 'PED-92778', '2025-12-04 23:33:01'),
-(20, 10, 'Ramon Castilla Lt 01', 'dsdsdsdsds', '987253671', 'efectivo', NULL, NULL, NULL, NULL, NULL, NULL, 'PED-35003', '2025-12-04 23:59:18'),
-(21, 11, 'Ramon Castilla Lt 01', 'dsdsdsdsds', '987253671', 'efectivo', NULL, NULL, NULL, NULL, NULL, NULL, 'PED-44879', '2025-12-05 01:53:58');
+(22, 12, 'La Esperanza El provenir', 'Parque Industrial', '987253671', 'tarjeta', '4454-6767-3343-4445', 'Jose Armando', '546', '11/25', NULL, NULL, 'PED-29429', '2025-12-08 22:09:53');
 
 -- --------------------------------------------------------
-
 --
 -- Estructura de tabla para la tabla `detalle_reserva`
 --
 
-CREATE TABLE `detalle_reserva` (
-  `id_detalle` int(11) NOT NULL,
-  `id_reserva` int(11) NOT NULL,
-  `id_producto` int(11) NOT NULL,
-  `cantidad` int(11) NOT NULL,
-  `precio` decimal(10,2) NOT NULL,
-  `subtotal` decimal(10,2) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+-- CREATE TABLE `detalle_reserva` (
+--   `id_detalle` int(11) NOT NULL,
+--   `id_reserva` int(11) NOT NULL,
+--   `id_producto` int(11) NOT NULL,
+--   `cantidad` int(11) NOT NULL,
+--   `precio` decimal(10,2) NOT NULL,
+--   `subtotal` decimal(10,2) NOT NULL,
+--   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+--   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -127,21 +106,7 @@ CREATE TABLE `pedidos` (
 --
 
 INSERT INTO `pedidos` (`id_pedido`, `id_usuario`, `id_delivery`, `total`, `fecha_pedido`, `estado`) VALUES
-(6, 4, 6, 27.00, '2025-12-02 18:55:33', 'Recibido'),
-(7, 4, 7, 20.00, '2025-12-02 18:56:40', 'pendiente'),
-(8, 6, 8, 30.00, '2025-12-02 21:02:13', 'Recibido'),
-(9, 8, 9, 30.00, '2025-12-02 21:39:24', 'Recibido'),
-(10, 8, 10, 30.00, '2025-12-03 00:57:52', 'Cancelado'),
-(12, 8, 12, 30.00, '2025-12-04 00:38:45', 'pendiente'),
-(13, 8, 13, 45.00, '2025-12-04 01:48:15', 'pendiente'),
-(14, 8, 14, 30.00, '2025-12-04 14:59:59', 'pendiente'),
-(15, 8, 15, 45.00, '2025-12-04 17:25:28', 'pendiente'),
-(16, 8, 16, 30.00, '2025-12-04 19:17:42', 'Recibido'),
-(17, 10, 17, 44.00, '2025-12-04 23:21:35', 'Recibido'),
-(18, 10, 18, 27.00, '2025-12-04 23:32:49', 'pendiente'),
-(19, 10, 19, 27.00, '2025-12-04 23:33:01', 'pendiente'),
-(20, 10, 20, 30.00, '2025-12-04 23:59:18', 'pendiente'),
-(21, 11, 21, 30.00, '2025-12-05 01:53:58', 'Recibido');
+(22, 12, 22, 30.00, '2025-12-08 22:09:53', 'pendiente');
 
 -- --------------------------------------------------------
 
@@ -163,22 +128,8 @@ CREATE TABLE `pedido_detalle` (
 --
 
 INSERT INTO `pedido_detalle` (`id_detalle`, `id_pedido`, `id_producto`, `precio`, `cantidad`, `subtotal`) VALUES
-(2, 6, 14, 9.00, 3, 27.00),
-(3, 7, 15, 5.00, 4, 20.00),
-(4, 8, 13, 10.00, 3, 30.00),
-(5, 9, 13, 10.00, 3, 30.00),
-(6, 10, 13, 10.00, 3, 30.00),
-(8, 12, 13, 10.00, 3, 30.00),
-(9, 13, 3, 15.00, 3, 45.00),
-(10, 14, 13, 10.00, 3, 30.00),
-(11, 15, 3, 15.00, 3, 45.00),
-(12, 16, 13, 10.00, 3, 30.00),
-(13, 17, 3, 15.00, 2, 30.00),
-(14, 17, 9, 14.00, 1, 14.00),
-(15, 18, 14, 9.00, 3, 27.00),
-(16, 19, 14, 9.00, 3, 27.00),
-(17, 20, 13, 10.00, 3, 30.00),
-(18, 21, 13, 10.00, 3, 30.00);
+(19, 22, 13, 10.00, 2, 20.00),
+(20, 22, 15, 5.00, 2, 10.00);
 
 -- --------------------------------------------------------
 
@@ -240,8 +191,8 @@ CREATE TABLE `reserva` (
 --
 
 INSERT INTO `reserva` (`id_reserva`, `id_usuario`, `fecha`, `hora`, `mesa`, `personas`, `created_at`, `updated_at`) VALUES
-(51, 8, '2025-12-04', '19:30:00', 'Mesa 4', 1, '2025-12-05 00:15:53', '2025-12-05 00:15:53'),
-(52, 10, '2025-12-09', '21:30:00', 'Mesa 3', 2, '2025-12-05 04:18:50', '2025-12-05 04:18:50');
+(54, 12, '2025-12-08', '17:00:00', 'Mesa 2', 1, '2025-12-09 03:10:36', '2025-12-09 03:10:36'),
+(55, 14, '2025-12-09', '18:30:00', 'Mesa 7', 1, '2025-12-09 03:15:56', '2025-12-09 03:15:56');
 
 -- --------------------------------------------------------
 
@@ -267,14 +218,9 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`id_usuario`, `dni`, `nombre`, `correo`, `telefono`, `direccion`, `referencia`, `password`, `rol`, `fecha_registro`) VALUES
-(4, '72356620', 'Cristina', 'Armi_01@lacito', '987253671', 'Ramon Castilla Lt 01', 'dsdsdsdsds', '$2y$12$fffEdFx2YVCkDgJzMxuTeu0mhTPopMliZBcIqsH9XKJmI.tS4Cgv6', 'usuario', '2025-12-01 20:55:55'),
-(5, '91823674', 'Alexander', 'Alex_pd@hotm', '918273456', 'HuANCHO mZ B', 'dsdsdsdsds', '$2y$12$dAP8hDNMUghc80J/05JN2OOzG3sR0TwZPZPmFyvECv6sft7G/RFuO', 'admin', '2025-12-02 23:47:04'),
-(6, '92345678', 'Jose Armando', 'Jose_@pd', '8282828288', 'Ramon Castilla Lt 01', 'dsdsdsdsds', '$2y$12$PRzhMqruwaWEVYWXvHY25OnZSDN698m1.NMXOMgAu4Fjmca9SbTpS', 'usuario', '2025-12-03 02:01:14'),
-(7, '22222222', 'asds', 'qwqwe@jot', '292929292', 'sdsdsds', 'dsdsdsds', '$2y$12$j7HWn0fB6lCixiQz.Joxp.Xf/3CzGWKvrDxf5zjNKEtlO81Ufyyuy', 'admin', '2025-12-03 02:03:35'),
-(8, '11111111', 'asasa', 'asasas@sds', '1234323', 'sdadasdsadsad', 'dsdsdsdsds', '$2y$12$XIXvVaMD2Fw0H.S0XNKSputgjf7gkYkU46BVi4MCDowt/CVr7XQsm', 'usuario', '2025-12-03 02:38:50'),
-(9, '82934567', 'Fernandita', 'nasms@hsaks', '819236748', 'Ramon Castilla Lt 01', 'dsdsdsdsds', '$2y$12$eNoaHUIc45Z0cIlJeHUucOaKib4TXEaL846EEuswtlP2YOzdObbyS', 'usuario', '2025-12-05 01:57:35'),
-(10, '74789689', 'liliana', 'merli_76@hotmail.com', '987654578', 'juan 23', 'parque industrial', '$2y$12$vSZROBXE4JBIZ3izjD8WkeOMt3GeJGbR7QL/ipUhOQhHENcmAtqmm', 'usuario', '2025-12-05 04:14:50'),
-(11, '92345627', 'Jose Armando', 'nando_pr@hotmail', '92834567', 'Ramon Castilla Lt 01', 'parque industrial', '$2y$12$TAj5G3s4r9b65DOGzNlNcumN5xCV0NVkgSy54FJyXvLH8qmy3CKGm', 'usuario', '2025-12-05 06:50:16');
+(12, '72356620', 'Jose Armando', 'nando_pr@hotmail.com', '987253671', 'La Esperanza El provenir', 'parque industrial', '$2y$12$tjSK6snC36sRbWlAHOwhfeQu/F1hOLhGAQ4Me5I5TmttM5lRX0Sha', 'usuario', '2025-12-09 03:08:47'),
+(13, '72993837', 'Ariel Medina', 'ari_87@hotmail.com', '992827665', 'Lambayeque - Chiclayo', 'Las Musas', '$2y$12$nnNfRTK0S03/UME4BRGOHOa6fo0NJ1MLXPoDuzP7V3tB3rY.Cm8Za', 'admin', '2025-12-09 03:12:35'),
+(14, '77238988', 'Fernanda Ramos', 'fer_2005@outlook.com', '992827762', 'Piura - Piura', 'Plaza de Armas', '$2y$12$oHPFEdN4SS7YQaIGr8IH4upxb9nHMxA5BOEsYJ242/xLZiJnQUPXq', 'usuario', '2025-12-09 03:14:37');
 
 --
 -- Índices para tablas volcadas
@@ -290,10 +236,12 @@ ALTER TABLE `delivery`
 --
 -- Indices de la tabla `detalle_reserva`
 --
-ALTER TABLE `detalle_reserva`
-  ADD PRIMARY KEY (`id_detalle`),
-  ADD KEY `id_reserva` (`id_reserva`),
-  ADD KEY `id_producto` (`id_producto`);
+
+-- ALTER TABLE `detalle_reserva`
+--   ADD PRIMARY KEY (`id_detalle`),
+--   ADD KEY `id_reserva` (`id_reserva`),
+--   ADD KEY `id_producto` (`id_producto`);
+
 
 --
 -- Indices de la tabla `pedidos`
@@ -340,25 +288,27 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `delivery`
 --
 ALTER TABLE `delivery`
-  MODIFY `id_delivery` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id_delivery` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_reserva`
 --
-ALTER TABLE `detalle_reserva`
-  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+-- ALTER TABLE `detalle_reserva`
+--   MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
 
 --
 -- AUTO_INCREMENT de la tabla `pedidos`
 --
 ALTER TABLE `pedidos`
-  MODIFY `id_pedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id_pedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de la tabla `pedido_detalle`
 --
 ALTER TABLE `pedido_detalle`
-  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
@@ -370,13 +320,13 @@ ALTER TABLE `productos`
 -- AUTO_INCREMENT de la tabla `reserva`
 --
 ALTER TABLE `reserva`
-  MODIFY `id_reserva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id_reserva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Restricciones para tablas volcadas
@@ -391,9 +341,10 @@ ALTER TABLE `delivery`
 --
 -- Filtros para la tabla `detalle_reserva`
 --
-ALTER TABLE `detalle_reserva`
-  ADD CONSTRAINT `detalle_reserva_ibfk_1` FOREIGN KEY (`id_reserva`) REFERENCES `reserva` (`id_reserva`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `detalle_reserva_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- ALTER TABLE `detalle_reserva`
+--   ADD CONSTRAINT `detalle_reserva_ibfk_1` FOREIGN KEY (`id_reserva`) REFERENCES `reserva` (`id_reserva`) ON DELETE CASCADE ON UPDATE CASCADE,
+--   ADD CONSTRAINT `detalle_reserva_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `pedidos`
